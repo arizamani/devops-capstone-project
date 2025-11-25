@@ -29,10 +29,6 @@ spec:
       env:
         - name: WORKSPACE_SOURCE_PATH
           value: $(workspaces.source.path)
-      workingDir: $(workspaces.source.path)
-      securityContext:
-        runAsNonRoot: false
-        runAsUser: 0
       script: |
         #!/usr/bin/env sh
         set -eu
@@ -49,4 +45,11 @@ spec:
           # Delete files and directories starting with .. plus any other character
           rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
         fi
-
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      workingDir: $(workspaces.source.path)
